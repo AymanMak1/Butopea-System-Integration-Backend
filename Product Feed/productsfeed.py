@@ -3,7 +3,7 @@ import pandas as pd
 import xml.etree.ElementTree as xml
 
 conn = sqlite3.connect("./data.sqlite")
-cur = conn.cursor()
+#cur = conn.cursor()
 query1='SELECT p.product_id as ID,'\
         'pd.name as title,'\
         'pd.description,'\
@@ -19,7 +19,7 @@ query1='SELECT p.product_id as ID,'\
 
 root = xml.Element("Products")
 
-def GenerateXML(fileName):
+def GenerateProductFeed(fileName):
     df = pd.read_sql(query1, conn)
     for i in range(len(df)) :
         child = xml.Element("Product")
@@ -34,17 +34,16 @@ def GenerateXML(fileName):
         Link.text = 'https://butopea.com/p/' + df.loc[i,"ID"]
         ImageLink = xml.SubElement(child,"ImageLink")
         ImageLink.text = df.loc[i,"image_link"]
+        
         AdditionalImageLinks = xml.SubElement(child,"AdditionalImageLinks")
-        query2 ='SELECT p.product_id as ID,'\
-                 '"https://butopea.com/"|| pi.image AS additional_image_link,'\
-                 'sort_order '\
-                 'FROM product p, product_image pi '\
-                 'WHERE pi.product_id = p.product_id AND '\
-                 'p.product_id=' + str(df.loc[i,"ID"]) + ' AND status = "1" Order by sort_order;'\
-
-        df2 = pd.read_sql(query2, conn)
+        query2 ='SELECT p.product_id as ID, "https://butopea.com/"|| pi.image AS additional_image_link,'\
+                'sort_order FROM product p, product_image pi WHERE pi.product_id = p.product_id AND pi.product_id= ? AND '\
+                'status = "1" ORDER BY sort_order;'
+        df2 = pd.read_sql(query2, conn, params=[df.loc[i,"ID"]])
+        AdditionalImageLinks.text = ''
         for j in range(len(df2)):
-            AdditionalImageLinks.text = df2.loc[j,"additional_image_link"]
+            AdditionalImageLinks.text += df2.loc[j,"additional_image_link"] + "\n"
+    
                 
         Price = xml.SubElement(child,"Price")
         Price.text = df.loc[i,"price"]
@@ -63,4 +62,4 @@ def GenerateXML(fileName):
 
 
 if __name__ =="__main__":
-    GenerateXML("feed.xml")
+    GenerateProductFeed("feed.xml")
