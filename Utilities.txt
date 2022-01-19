@@ -31,5 +31,30 @@ WHERE p.product_id = pd.product_id and m.manufacturer_id = p.manufacturer_id AND
 SELECT p.product_id as ID, 'https://butopea.com/' || p.image as image_link, 'https://butopea.com/' || pi.image AS additional_image_link, sort_order 
 FROM product p, product_image pi 
 WHERE pi.product_id = p.product_id AND status = '1'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+query2 ='SELECT p.product_id as ID,'\
+        '"https://butopea.com/"|| pi.image AS additional_image_link,'\
+        'sort_order '\
+        'FROM product p, product_image pi '\
+        'WHERE pi.product_id = p.product_id AND '\
+        'status = "1";'\
+
+df2 = pd.read_sql(query2, conn)
+for j in range(len(df2)):
+    print(df2.loc[j,"additional_image_link"])
   
   
