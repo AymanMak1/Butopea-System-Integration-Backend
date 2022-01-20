@@ -32,7 +32,7 @@ npm install
 ```
 npx cypress open
 ```
-- the test is located in :
+- Using the cypress interface, the test is located in :
 ```
 'End-to-End-Testing\cypress\integration\'
 ```

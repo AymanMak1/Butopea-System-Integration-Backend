@@ -3,7 +3,6 @@ import pandas as pd
 import xml.etree.ElementTree as xml
 
 conn = sqlite3.connect("./data.sqlite")
-#cur = conn.cursor()
 query1='SELECT p.product_id as ID,'\
         'pd.name as title,'\
         'pd.description,'\
@@ -15,7 +14,6 @@ query1='SELECT p.product_id as ID,'\
         'WHERE p.product_id = pd.product_id AND '\
         'm.manufacturer_id = p.manufacturer_id '\
         'AND status = "1";'\
-        
 
 root = xml.Element("Products")
 
@@ -34,7 +32,7 @@ def GenerateProductFeed(fileName):
         Link.text = 'https://butopea.com/p/' + df.loc[i,"ID"]
         ImageLink = xml.SubElement(child,"ImageLink")
         ImageLink.text = df.loc[i,"image_link"]
-        
+
         AdditionalImageLinks = xml.SubElement(child,"AdditionalImageLinks")
         query2 ='SELECT p.product_id as ID, "https://butopea.com/"|| pi.image AS additional_image_link,'\
                 'sort_order FROM product p, product_image pi WHERE pi.product_id = p.product_id AND pi.product_id= ? AND '\
@@ -43,17 +41,15 @@ def GenerateProductFeed(fileName):
         AdditionalImageLinks.text = ''
         for j in range(len(df2)):
             AdditionalImageLinks.text += df2.loc[j,"additional_image_link"] + "\n"
-    
-                
+
+
         Price = xml.SubElement(child,"Price")
         Price.text = df.loc[i,"price"]
         Brand = xml.SubElement(child,"Brand")
         Brand.text = df.loc[i,"brand"]
         Condition = xml.SubElement(child,"Condition")
         Condition.text = 'new'
-        
-    
-    
+
     conn.close()
     tree = xml.ElementTree(root)
     with open(fileName,"wb") as feed:
