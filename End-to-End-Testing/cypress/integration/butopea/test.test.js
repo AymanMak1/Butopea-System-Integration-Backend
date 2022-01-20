@@ -8,10 +8,20 @@ describe('SystemIntegrationBackendPreliminaryTestCase',()=>{
 
     it('Should confirm if the second square contains an image, if it does, then it should extract the img url',()=>{
         // Checking if the second square contains an image
-        cy.get('div.banner-square-image').eq(1)
-        .find("img").should('exist').then(img =>{
-            cy.log(img)
-        });
+        cy.get('div.banner-square-image').eq(1).find("img").should('exist')
+          .invoke('attr', 'src').then((ImgSrc)=> {
+              cy.log("https://butopea.com/"+ImgSrc)
+        })
+        // Check if the square exist
+        cy.get('div.banner-square-overlay-container').eq(0).should('exist')
+        // find and check if the paragraph of the square exists, if it does then shows its text
+        cy.get('div.banner-square-overlay-container').eq(0).find("p").should('exist').invoke('text').then((text)=> {
+            cy.log(text)
+        })
+        cy.get('div.banner-square-overlay-container').eq(0).find("div.banner-square-overlay-cta").should('exist').invoke('text').then((text)=> {
+            cy.log(text)
+        })
+        
 
     });
 
@@ -22,9 +32,8 @@ describe('SystemIntegrationBackendPreliminaryTestCase',()=>{
         cy.get('.product-listing').should('exist')
         // 3. Extracting each product infos
         // getting the link of the product and checking if it's valid or not
-        
         cy.get('.product-listing div > .product').each(($el) => {
-            //cy.log(``)
+           cy.log($el.children())
         })
 
         cy.get('.product-listing div > .product a').invoke('attr', 'href').then(href => {
